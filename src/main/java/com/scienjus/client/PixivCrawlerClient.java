@@ -501,7 +501,7 @@ public class PixivCrawlerClient {
      * 合成一个作者主页的连接
      * @return
      */
-    private String buildAuthorUrl(String id) {
+    private static final String buildAuthorUrl(String id) {
         return PixivCrawlerConfig.DETAIL_URL + "?id=" + id;
     }
 
@@ -510,7 +510,7 @@ public class PixivCrawlerClient {
      * @param id 作品id
      * @return
      */
-    private String buildDetailUrl(String id) {
+    private static final String buildDetailUrl(String id) {
         return PixivCrawlerConfig.DETAIL_URL + "?mode=medium&illust_id=" + id;
     }
 
@@ -522,7 +522,7 @@ public class PixivCrawlerClient {
      * @param isR18 是否R18
      * @return
      */
-    private String buildRankUrl(String date, int page, RankingMode mode, boolean isR18) {
+    private static final String buildRankUrl(String date, int page, RankingMode mode, boolean isR18) {
         String param = mode.name();
         if (isR18) {
             param += "_r18";
@@ -536,7 +536,7 @@ public class PixivCrawlerClient {
      * @param isR18 是否R18
      * @return
      */
-    private String buildSearchUrl(String keyWord, boolean isR18) {
+    private static final String buildSearchUrl(String keyWord, boolean isR18) {
         return PixivCrawlerConfig.SEARCH_URL + "?word=" + keyWord + "&r18=" + (isR18 ? "1" : "0");
     }
 
