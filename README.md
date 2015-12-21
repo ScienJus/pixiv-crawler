@@ -91,9 +91,9 @@ client.searchByAuthor("111111");
 
 ##帮助
 
-在使用中如果您遇到了问题或是有新的想法，请给我提Issues。或是通过以下方式联系我：
+在使用中如果您遇到了问题或是有新的想法，请给我提 Issues。或是通过以下方式联系我：
  - 博客：[我的博客][2]
- - 邮箱：xie_enlong@foxmail.com
+ - 邮箱：`i@scienjus.com`
 
 [1]:http://www.scienjus.com/pixiv-parser/
 [2]:http://www.scienjus.com
