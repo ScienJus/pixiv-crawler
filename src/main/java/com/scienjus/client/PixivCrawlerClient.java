@@ -148,7 +148,7 @@ public class PixivCrawlerClient {
      * 默认Http配置
      * @param request
      */
-    private static final void defaultHttpConfig(HttpRequestBase request) {
+    private static void defaultHttpConfig(HttpRequestBase request) {
         RequestConfig requestConfig = RequestConfig.custom().
                 setSocketTimeout(PixivCrawlerConfig.SOCKET_TIMEOUT).
                 setConnectTimeout(PixivCrawlerConfig.CONNECT_TIMEOUT).
@@ -240,9 +240,7 @@ public class PixivCrawlerClient {
             if (fail++ > PixivCrawlerConfig.MAX_FAILURE_TIME) {
                 return null;
             }
-            try {
-                Thread.sleep(PixivCrawlerConfig.SLEEP_TIME);
-            } catch (InterruptedException e) {}
+            sleep(PixivCrawlerConfig.SLEEP_TIME);
         }
         return pageHtml;
     }
@@ -254,15 +252,11 @@ public class PixivCrawlerClient {
      */
     private String getPage(String url) {
         url = decodeUrl(url);
-        CloseableHttpResponse response = null;
-        HttpGet get = null;
-        client = HttpClients.createDefault();
-        try {
-            get = new HttpGet(url);
-            RequestConfig requestConfig = RequestConfig.custom().setSocketTimeout(PixivCrawlerConfig.SOCKET_TIMEOUT).setConnectTimeout(PixivCrawlerConfig.CONNECT_TIMEOUT).build();
-            get.setConfig(requestConfig);
-            response = client.execute(get, context);
-            BufferedReader br = new BufferedReader(new InputStreamReader(response.getEntity().getContent(), PixivCrawlerConfig.ENCODING));
+        HttpGet get = new HttpGet(url);
+        RequestConfig requestConfig = RequestConfig.custom().setSocketTimeout(PixivCrawlerConfig.SOCKET_TIMEOUT).setConnectTimeout(PixivCrawlerConfig.CONNECT_TIMEOUT).build();
+        get.setConfig(requestConfig);
+        try (CloseableHttpResponse response = client.execute(get, context);
+             BufferedReader br = new BufferedReader(new InputStreamReader(response.getEntity().getContent(), PixivCrawlerConfig.ENCODING))) {
             StringBuilder pageHTML = new StringBuilder();
             String line;
             while ((line = br.readLine()) != null) {
@@ -274,14 +268,6 @@ public class PixivCrawlerClient {
             LOGGER.error("获取网页失败：" + url);
             LOGGER.error(e.getMessage());
             return null;
-        } finally {
-            try {
-                if (response != null) {
-                    response.close();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
         }
     }
 
@@ -380,7 +366,7 @@ public class PixivCrawlerClient {
      * @param dateStr
      * @return
      */
-    private static final boolean checkDate(String dateStr) {
+    private static boolean checkDate(String dateStr) {
         if (PixivCrawlerConfig.TODAY.equals(dateStr)) {
             return true;
         }
@@ -398,7 +384,7 @@ public class PixivCrawlerClient {
      * @param startDateStr
      * @return
      */
-    private static final boolean isFinished(String nowDateStr, String startDateStr) {
+    private static boolean isFinished(String nowDateStr, String startDateStr) {
         if (PixivCrawlerConfig.TODAY.equals(nowDateStr)) {
             return false;
         }
@@ -451,7 +437,6 @@ public class PixivCrawlerClient {
     public void downloadRankBetween(String start, String end, RankingMode mode, boolean isR18) {
         if (start.equals(end)) {
             downloadRankOn(end, mode, isR18);
-            return;
         } else {
             String now = end;
             while ((now = downloadRankOn(now, mode, isR18)) != null) {
@@ -510,7 +495,7 @@ public class PixivCrawlerClient {
      * @param id 作品id
      * @return
      */
-    private static final String buildDetailUrl(String id) {
+    private static String buildDetailUrl(String id) {
         return PixivCrawlerConfig.DETAIL_URL + "?mode=medium&illust_id=" + id;
     }
 
@@ -522,7 +507,7 @@ public class PixivCrawlerClient {
      * @param isR18 是否R18
      * @return
      */
-    private static final String buildRankUrl(String date, int page, RankingMode mode, boolean isR18) {
+    private static String buildRankUrl(String date, int page, RankingMode mode, boolean isR18) {
         String param = mode.name();
         if (isR18) {
             param += "_r18";
@@ -536,7 +521,7 @@ public class PixivCrawlerClient {
      * @param isR18 是否R18
      * @return
      */
-    private static final String buildSearchUrl(String keyWord, boolean isR18) {
+    private static String buildSearchUrl(String keyWord, boolean isR18) {
         return PixivCrawlerConfig.SEARCH_URL + "?word=" + keyWord + "&r18=" + (isR18 ? "1" : "0");
     }
 
