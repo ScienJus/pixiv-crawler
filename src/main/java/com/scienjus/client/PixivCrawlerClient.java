@@ -114,7 +114,7 @@ public class PixivCrawlerClient {
      */
     public static PixivCrawlerClient create(String path) {
         if (path == null || "".equals(path.trim())) {
-            LOGGER.error("请输入地址！");
+            LOGGER.error("路径不允许为空！");
             return null;
         }
         File dir = new File(path);
@@ -122,7 +122,7 @@ public class PixivCrawlerClient {
             dir.mkdirs();
         }
         if (!dir.isDirectory()) {
-            LOGGER.error("选择的路径并不是一个文件夹！");
+            LOGGER.error("该路径并不是一个有效的文件夹！");
             return null;
         }
         return new PixivCrawlerClient(path);
@@ -136,10 +136,10 @@ public class PixivCrawlerClient {
         if (!path.endsWith("/")) {
             path = path + "/";
         }
+        this.path = path;
         if (pool == null) {
             pool = Executors.newFixedThreadPool(PixivCrawlerConfig.POOL_SIZE);
         }
-        this.path = path;
         parser = new PageParser();
         client = HttpClients.createDefault();
     }
@@ -218,11 +218,7 @@ public class PixivCrawlerClient {
      * 通过作者搜索
      * @param id
      */
-    public void searchByAuthor(String id) {
-        if (id == null || "".equals(id)) {
-            LOGGER.error("请输入作者id！");
-            return;
-        }
+    public void searchByAuthor(long id) {
         LOGGER.info("开始下载作者id[" + id + "]的所有图片");
         downloadFromPage(buildAuthorUrl(id), -1);
     }
@@ -313,7 +309,7 @@ public class PixivCrawlerClient {
     private void sleep(long millis) {
         try {
             Thread.sleep(millis);
-        } catch (InterruptedException e) {
+        } catch (InterruptedException ignored) {
         }
     }
 
@@ -486,7 +482,7 @@ public class PixivCrawlerClient {
      * 合成一个作者主页的连接
      * @return
      */
-    private static final String buildAuthorUrl(String id) {
+    private static final String buildAuthorUrl(long id) {
         return PixivCrawlerConfig.DETAIL_URL + "?id=" + id;
     }
 
